@@ -129,11 +129,6 @@ function ff($name) {
 # Network Utilities
 function Get-PubIP { (Invoke-WebRequest http://ifconfig.me/ip).Content }
 
-# Open WinUtil
-function winutil {
-	iwr -useb https://christitus.com/win | iex
-}
-
 # System Utilities
 function admin {
     if ($args.Count -gt 0) {
@@ -164,31 +159,7 @@ function unzip ($file) {
     $fullFile = Get-ChildItem -Path $pwd -Filter $file | ForEach-Object { $_.FullName }
     Expand-Archive -Path $fullFile -DestinationPath $pwd
 }
-function hb {
-    if ($args.Length -eq 0) {
-        Write-Error "No file path specified."
-        return
-    }
-    
-    $FilePath = $args[0]
-    
-    if (Test-Path $FilePath) {
-        $Content = Get-Content $FilePath -Raw
-    } else {
-        Write-Error "File path does not exist."
-        return
-    }
-    
-    $uri = "http://bin.christitus.com/documents"
-    try {
-        $response = Invoke-RestMethod -Uri $uri -Method Post -Body $Content -ErrorAction Stop
-        $hasteKey = $response.key
-        $url = "http://bin.christitus.com/$hasteKey"
-        Write-Output $url
-    } catch {
-        Write-Error "Failed to upload the document. Error: $_"
-    }
-}
+
 function grep($regex, $dir) {
     if ( $dir ) {
         Get-ChildItem $dir | select-string $regex
@@ -369,15 +340,11 @@ ff <name> - Finds files recursively with the specified name.
 
 Get-PubIP - Retrieves the public IP address of the machine.
 
-winutil - Runs the WinUtil script from Chris Titus Tech.
-
 uptime - Displays the system uptime.
 
 reload-profile - Reloads the current user's PowerShell profile.
 
 unzip <file> - Extracts a zip file to the current directory.
-
-hb <file> - Uploads the specified file's content to a hastebin-like service and returns the URL.
 
 grep <regex> [dir] - Searches for a regex pattern in files within the specified directory or from the pipeline input.
 
